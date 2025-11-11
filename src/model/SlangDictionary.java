@@ -8,11 +8,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SlangDictionary {
-    private Map<String, TreeSet<String>> data = new HashMap<>();
     private final String SRC_PATH = "data/slang.txt";
     private final String CUR_PATH = "data/current_slang.txt";
 
+    private Map<String, TreeSet<String>> data = null;
+    private HistoryManager historyManager = null;
+
     public SlangDictionary() {
+        data = new HashMap<>();
+        historyManager = new HistoryManager();
+
         if (!loadFromFile(CUR_PATH)) {
             loadFromFile(SRC_PATH);
         }
@@ -64,6 +69,7 @@ public class SlangDictionary {
     // Chức năng 1: Tìm kiếm theo slang word
     public TreeSet<String> searchByWord(String word) {
         if (word == null || word.isEmpty()) return null;
+        historyManager.addHistory(word);
         return data.get(word);
     }
 
@@ -86,9 +92,14 @@ public class SlangDictionary {
     }
 
     // Chức năng 3: Hiển thị history
+    public List<String> getHistory() {
+        return historyManager.getHistory();
+    }
+
     // Chức năng 4: Add 1 slang words mới
     // Chức năng 5: Edit 1 slang word (Thay thế định nghĩa cũ bằng định nghĩa mới)
     // Chức năng 6: Delete 1 slang word
+    // Chức năng 7: Reset danh sách slang words gốc.
     // Chức năng 8: Random 1 slang word (On this day slang word) 
     // Chức năng 9 & 10: Tạo Quiz (Tạo câu hỏi từ Slang/Definition ngẫu nhiên)
 }
