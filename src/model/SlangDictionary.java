@@ -24,8 +24,11 @@ public class SlangDictionary {
     }
 
     private boolean loadFromFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) return false;
+
         data.clear();
-        try (Scanner sc = new Scanner(new File(path), StandardCharsets.UTF_8)) {
+        try (Scanner sc = new Scanner(file, StandardCharsets.UTF_8)) {
             // Skip header
             if (sc.hasNextLine()) {
                 sc.nextLine();
@@ -47,7 +50,8 @@ public class SlangDictionary {
                             .addAll(definitions);
                 }
             }
-            return data.size() > 0;
+
+            return (data.size() > 0);
         } catch (IOException e) {
             System.err.println("Error loading file: " + path + ". " + e.getMessage());
             return false;
@@ -96,10 +100,86 @@ public class SlangDictionary {
         return historyManager.getHistory();
     }
 
-    // Chức năng 4: Add 1 slang words mới
-    // Chức năng 5: Edit 1 slang word (Thay thế định nghĩa cũ bằng định nghĩa mới)
+    // Chức năng 4: Add 1 slang word mới
+    public int addSlang(String word, String definition, boolean overwrite) {
+        if (word == null || word.trim().isEmpty() || definition == null || definition.trim().isEmpty()) {
+            return -2;
+        }
+
+        word = word.trim();
+        definition = definition.trim();
+
+        if (data.containsKey(word)) {
+            if (overwrite) {
+                TreeSet<String> newDefinitions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+                newDefinitions.add(definition);
+                data.put(word, newDefinitions);
+                saveToFile();
+                return 0;
+            } else {
+                boolean definitionAdded = data.get(word).add(definition);
+                if (definitionAdded) {
+                    saveToFile();
+                    return 2;
+                }
+                return -1;
+            }
+        } else {
+            TreeSet<String> definitions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            definitions.add(definition);
+            data.put(word, definitions);
+            saveToFile();
+            return 1;
+        }
+    }
+
+    // Chức năng 5: Edit 1 slang word
+    public boolean editSlang(String word, String oldDef, String newDef) {
+        if (!data.containsKey(word)) {
+            return false;
+        }
+
+        word = word.trim();
+        oldDef = oldDef.trim();
+        newDef = newDef.trim();
+
+        TreeSet<String> definitions = data.get(word);
+
+        if (!definitions.contains(oldDef)) {
+            return false;
+        }
+
+        definitions.remove(oldDef);
+        if (newDef.isEmpty()) {
+            if (definitions.isEmpty()) {
+                data.remove(word);
+                System.out.println("Word '" + word + "' deleted because it had no definitions left.");
+            }
+        } else {
+            definitions.add(newDef);
+        }
+
+        saveToFile();
+        return true;
+    }
+
     // Chức năng 6: Delete 1 slang word
+    public boolean deleteSlang(String word) {
+        if (data.containsKey(word)) {
+            data.remove(word);
+            saveToFile();
+            return true;
+        }
+        return false;
+    }
+
     // Chức năng 7: Reset danh sách slang words gốc.
-    // Chức năng 8: Random 1 slang word (On this day slang word) 
+    public void resetDictionary() {
+        loadFromFile(SRC_PATH);
+        new File(CUR_PATH).delete();
+        historyManager.clearHistory();
+    }
+
+    // Chức năng 8: Random 1 slang word (On this day slang word)
     // Chức năng 9 & 10: Tạo Quiz (Tạo câu hỏi từ Slang/Definition ngẫu nhiên)
 }
