@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-public class HistoryManager implements Serializable {
+public class HistoryManager {
     private final String PATH = "data/history.txt";
     private List<String> history = null;
 

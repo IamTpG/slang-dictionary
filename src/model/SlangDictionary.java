@@ -181,5 +181,61 @@ public class SlangDictionary {
     }
 
     // Chức năng 8: Random 1 slang word (On this day slang word)
-    // Chức năng 9 & 10: Tạo Quiz (Tạo câu hỏi từ Slang/Definition ngẫu nhiên)
+    public Map.Entry<String, TreeSet<String>> randomSlang() {
+        if (data.isEmpty()) return null;
+
+        List<String> allWords = new ArrayList<>(data.keySet());
+        Random random = new Random();
+        String randomKey = allWords.get(random.nextInt(allWords.size()));
+
+        return new AbstractMap.SimpleEntry<>(randomKey, data.get(randomKey));
+    }
+
+    // Chức năng 9: Đố vui (1 random slangs và 4 definitions)
+    public QuizQuestion generateSlangToDefQuiz() {
+        if (data.size() < 4) {
+            return null;
+        }
+
+        List<String> allWords = new ArrayList<>(data.keySet());
+        Collections.shuffle(allWords);
+
+        String correctWord = allWords.get(0);
+        String correctDef = data.get(correctWord).iterator().next();
+
+        List<String> answers = new ArrayList<>();
+        answers.add(correctDef); // Thêm đáp án đúng
+        for (int i = 1; i <= 3; i++) {
+            answers.add(data.get(allWords.get(i)).iterator().next());
+        }
+
+        Collections.shuffle(answers);
+        String question = "What does the slang word '" + correctWord + "' mean?";
+
+        return new QuizQuestion(question, answers, correctDef);
+    }
+
+    // Chức năng 10: Đố vui (1 random definition và 4 slang words)
+    public QuizQuestion generateDefToSlangQuiz() {
+        if (data.size() < 4) {
+            return null;
+        }
+
+        List<String> allWords = new ArrayList<>(data.keySet());
+        Collections.shuffle(allWords);
+
+        String correctWord = allWords.get(0);
+        String correctDef = data.get(correctWord).iterator().next();
+
+        List<String> answers = new ArrayList<>();
+        answers.add(correctWord);
+        for (int i = 1; i <= 3; i++) {
+            answers.add(allWords.get(i));
+        }
+
+        Collections.shuffle(answers);
+        String question = "Which slang word means '" + correctDef + "'?";
+
+        return new QuizQuestion(question, answers, correctWord);
+    }
 }
