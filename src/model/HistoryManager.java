@@ -19,7 +19,6 @@ public class HistoryManager {
     public void addHistory(String word) {
         if (word == null || word.trim().isEmpty()) return;
         history.add(word);
-        saveLastEntry(word);
     }
 
     public List<String> getHistory() {
@@ -47,13 +46,19 @@ public class HistoryManager {
         }
     }
 
-    private void saveLastEntry(String word) {
+    public void saveHistory() {
+        File file = new File(PATH);
+
         try (PrintWriter pw = new PrintWriter(
                 new BufferedWriter(
-                        new FileWriter(PATH, StandardCharsets.UTF_8, true)))) {
-            pw.println(word);
+                        new FileWriter(file, StandardCharsets.UTF_8, false)))) {
+
+            for (String word : history) {
+                pw.println(word);
+            }
+
         } catch (IOException e) {
-            System.err.println("Error appending history: " + e.getMessage());
+            System.err.println("Error writing history: " + e.getMessage());
         }
     }
 

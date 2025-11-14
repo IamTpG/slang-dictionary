@@ -1,7 +1,8 @@
-import model.SlangDictionary;
+import model.Tester;
 
 public class Main {
     public static void main(String[] args) {
-        SlangDictionary dictionary = new SlangDictionary();
+        Tester.testFeature1();
+        Tester.testFeature2();
     }
 }

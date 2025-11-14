@@ -8,19 +8,26 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SlangDictionary {
-    private final String SRC_PATH = "data/slang.txt";
+    private final String SRC_PATH = "data/mock.txt";
     private final String CUR_PATH = "data/current_slang.txt";
 
     private Map<String, TreeSet<String>> data = null;
     private HistoryManager historyManager = null;
 
-    public SlangDictionary() {
+    public SlangDictionary(String path) {
         data = new HashMap<>();
         historyManager = new HistoryManager();
 
-        if (!loadFromFile(CUR_PATH)) {
-            loadFromFile(SRC_PATH);
+        if (!loadFromFile(path)) {
+            if (!loadFromFile(CUR_PATH)) {
+                loadFromFile(SRC_PATH);
+            }
         }
+    }
+
+    public void quit() {
+        saveToFile();
+        historyManager.saveHistory();
     }
 
     private boolean loadFromFile(String path) {
@@ -73,7 +80,6 @@ public class SlangDictionary {
     // Chức năng 1: Tìm kiếm theo slang word
     public TreeSet<String> searchByWord(String word) {
         if (word == null || word.isEmpty()) return null;
-        historyManager.addHistory(word);
         return data.get(word);
     }
 
