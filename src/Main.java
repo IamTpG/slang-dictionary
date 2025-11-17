@@ -1,5 +1,9 @@
+import model.SlangDictionary;
+import view.MainFrame;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.printf("Hello world!");
+        SlangDictionary dictionary = new SlangDictionary("");
+        new MainFrame(dictionary).setVisible(true);
     }
 }
