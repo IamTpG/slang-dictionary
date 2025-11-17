@@ -79,11 +79,6 @@ The application is structured into three main sections, providing 10 core functi
 2.  Compile all Java files.
 3.  Execute the main class `Main.java`.
 
-<<<<<<< HEAD
-<!-- end list -->
-
-=======
->>>>>>> 1044432561df914ef32054bf34ab8a5ffdfcc0b9
 ```bash
 # Example compilation (adjust path/classpath as needed)
 javac -d bin src/**/*.java
@@ -94,8 +89,4 @@ java -cp bin Main
 
 ### Exiting Safely
 
-<<<<<<< HEAD
 The application uses a `WindowListener` to manage shutdown. When the user closes the main window, the application automatically calls the `quit()` method in `SlangDictionary` to save all current changes and history before exiting.
-=======
-The application uses a `WindowListener` to manage shutdown. When the user closes the main window, the application automatically calls the `quit()` method in `SlangDictionary` to save all current changes and history before exiting.
->>>>>>> 1044432561df914ef32054bf34ab8a5ffdfcc0b9
