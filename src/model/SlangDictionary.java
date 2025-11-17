@@ -146,15 +146,16 @@ public class SlangDictionary {
 
     // Chức năng 5: Edit 1 slang word
     public boolean editSlang(String word, String oldDef, String newDef) {
-        if (!data.containsKey(word)) {
+        String upperCaseWord = word.trim().toUpperCase();
+
+        if (!data.containsKey(upperCaseWord)) {
             return false;
         }
 
-        word = word.trim();
         oldDef = oldDef.trim();
         newDef = newDef.trim();
 
-        TreeSet<String> definitions = data.get(word);
+        TreeSet<String> definitions = data.get(upperCaseWord);
 
         if (!definitions.contains(oldDef)) {
             return false;
@@ -163,8 +164,8 @@ public class SlangDictionary {
         definitions.remove(oldDef);
         if (newDef.isEmpty()) {
             if (definitions.isEmpty()) {
-                data.remove(word);
-                System.out.println("Word '" + word + "' deleted because it had no definitions left.");
+                data.remove(upperCaseWord);
+                System.out.println("Word '" + upperCaseWord + "' deleted because it had no definitions left.");
             }
         } else {
             definitions.add(newDef);
@@ -175,8 +176,9 @@ public class SlangDictionary {
 
     // Chức năng 6: Delete 1 slang word
     public boolean deleteSlang(String word) {
-        if (data.containsKey(word)) {
-            data.remove(word);
+        String upperCaseWord = word.trim().toUpperCase();
+        if (data.containsKey(upperCaseWord)) {
+            data.remove(upperCaseWord);
             return true;
         }
         return false;

@@ -33,14 +33,19 @@ public class MainFrame extends JFrame {
 
     private void setupTabs() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("Arial", Font.BOLD, 14));
+        tabbedPane.setFont(new Font("Arial", Font.BOLD, 18));
 
         // 1. Tab Tra Cứu & Quản Lý
         SlangPanel slangPanel = new SlangPanel(dictionary);
         tabbedPane.addTab("1. Tra Cứu & Quản Lý", slangPanel);
 
         // 2. Tab Lịch Sử
+        HistoryPanel historyPanel = new HistoryPanel(dictionary);
+        tabbedPane.addTab("2. Lịch Sử Tra Cứu", historyPanel);
+
         // 3. Tab Đố Vui
+        QuizPanel quizPanel = new QuizPanel(dictionary);
+        tabbedPane.addTab("3. Đố Vui Slang", quizPanel);
 
         // 4. Tab Reset
         JPanel resetPanel = createResetPanel();

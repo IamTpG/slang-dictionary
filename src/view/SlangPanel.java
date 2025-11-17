@@ -26,7 +26,7 @@ public class SlangPanel extends JPanel {
         // 2. Setup Results Area (Center)
         resultArea = new JTextArea("Kết quả tra cứu sẽ hiển thị tại đây.");
         resultArea.setEditable(false);
-        resultArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        resultArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
         add(new JScrollPane(resultArea), BorderLayout.CENTER);
 
         // 3. Setup CRUD/Random Buttons (South)
@@ -38,14 +38,16 @@ public class SlangPanel extends JPanel {
 
         // Input Field
         searchField = new JTextField(30);
-        searchField.setFont(new Font("Arial", Font.PLAIN, 16));
+        searchField.setFont(new Font("Arial", Font.PLAIN, 18));
         searchField.addActionListener(e -> performSearch());
         searchPanel.add(searchField, BorderLayout.CENTER);
 
         // Radio Buttons
         JPanel radioPanel = new JPanel();
-        rbSlang = new JRadioButton("Theo Slang Word (Q1)", true);
-        rbDefinition = new JRadioButton("Theo Definition (Q2)");
+        rbSlang = new JRadioButton("Theo Slang Word", true);
+        rbDefinition = new JRadioButton("Theo Definition");
+        rbSlang.setFont(new Font("Arial", Font.PLAIN, 18));
+        rbDefinition.setFont(new Font("Arial", Font.PLAIN, 18));
         ButtonGroup group = new ButtonGroup();
         group.add(rbSlang);
         group.add(rbDefinition);
@@ -55,7 +57,7 @@ public class SlangPanel extends JPanel {
 
         // Search Button
         btnSearch = new JButton("TRA CỨU");
-        btnSearch.setFont(new Font("Arial", Font.BOLD, 14));
+        btnSearch.setFont(new Font("Arial", Font.BOLD, 18));
         btnSearch.addActionListener(e -> performSearch());
         searchPanel.add(btnSearch, BorderLayout.EAST);
 
@@ -64,24 +66,29 @@ public class SlangPanel extends JPanel {
 
     private JPanel createActionPanel() {
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        Font largeBoldFont = new Font("Arial", Font.BOLD, 18);
 
         // Random Button
         btnRandom = new JButton("Random Slang");
+        btnRandom.setFont(largeBoldFont);
         btnRandom.addActionListener(e -> showRandomSlang());
         actionPanel.add(btnRandom);
 
         // Add Button
         btnAdd = new JButton("Thêm Slang");
+        btnAdd.setFont(largeBoldFont);
         btnAdd.addActionListener(e -> showAddDialog());
         actionPanel.add(btnAdd);
 
         // Edit Button
         JButton btnEdit = new JButton("Sửa Định nghĩa");
+        btnEdit.setFont(largeBoldFont);
         btnEdit.addActionListener(e -> showEditDialog());
         actionPanel.add(btnEdit);
 
         // Delete Button
         JButton btnDelete = new JButton("Xóa Slang");
+        btnDelete.setFont(largeBoldFont);
         btnDelete.addActionListener(e -> showDeleteDialog());
         actionPanel.add(btnDelete);
 
@@ -169,21 +176,46 @@ public class SlangPanel extends JPanel {
         if (word == null || word.trim().isEmpty()) return;
 
         List<String> defs = dictionary.searchByWord(word);
-        if (defs == null) {
-            JOptionPane.showMessageDialog(this, "Slang Word không tồn tại.");
+
+        if (defs == null || defs.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Slang Word không tồn tại hoặc không có định nghĩa nào.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Tạm thời định nghĩa đầu tiên để sửa
-        // TODO: Để người dùng chọn định nghĩa cần sửa
-        String oldDef = defs.getFirst();
-        String newDef = JOptionPane.showInputDialog(this, "Sửa định nghĩa cũ:\n'" + oldDef + "'\nThành định nghĩa mới (Để trống để xóa):");
+        // 1. Hiển thị hộp thoại chọn (JComboBox) để người dùng chọn định nghĩa cũ (oldDef)
+        String[] defArray = defs.toArray(new String[0]);
+
+        String oldDef = (String) JOptionPane.showInputDialog(
+                this,
+                "Chọn định nghĩa bạn muốn sửa:",
+                "Chọn Định Nghĩa Cũ (Q5)",
+                JOptionPane.QUESTION_MESSAGE,
+                null, // Icon mặc định
+                defArray,
+                defArray[0] // Giá trị mặc định
+        );
+
+        if (oldDef == null) {
+            return;
+        }
+
+        // 2. Nhập định nghĩa mới (newDef)
+        String newDef = JOptionPane.showInputDialog(
+                this,
+                "Sửa định nghĩa cũ:\n'" + oldDef + "'\n\nThành định nghĩa mới (Để trống để xóa):",
+                "Nhập Định Nghĩa Mới (Q5)",
+                JOptionPane.QUESTION_MESSAGE
+        );
 
         if (newDef != null) {
             if (dictionary.editSlang(word, oldDef, newDef)) {
-                JOptionPane.showMessageDialog(this, "Đã cập nhật định nghĩa cho '" + word + "'.");
+                if (newDef.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Đã xóa thành công định nghĩa: '" + oldDef + "' của từ '" + word + "'.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Đã cập nhật định nghĩa cho '" + word + "'.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Lỗi khi sửa định nghĩa. (Định nghĩa cũ không tồn tại)", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Lỗi khi sửa định nghĩa. Vui lòng kiểm tra lại Slang Word.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
