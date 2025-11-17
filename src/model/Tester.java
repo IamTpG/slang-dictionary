@@ -47,7 +47,7 @@ public class Tester {
 
         for (String word : words) {
             long startTime = System.nanoTime();
-            TreeSet<String> defs = dict.searchByWord(word);
+            List<String> defs = dict.searchByWord(word);
             double durationMillis = (double) (System.nanoTime() - startTime) / 1_000_000.0;
 
             System.out.print(word + ": ");

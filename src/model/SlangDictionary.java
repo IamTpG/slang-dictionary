@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SlangDictionary {
-    private final String SRC_PATH = "data/mock.txt";
+    private final String SRC_PATH = "data/slang.txt";
     private final String CUR_PATH = "data/current_slang.txt";
 
     private Map<String, TreeSet<String>> data = null;
@@ -47,7 +47,7 @@ public class SlangDictionary {
 
                 if (parts.length != 2) continue;
 
-                String word = parts[0].trim();
+                String word = parts[0].trim().toUpperCase();
                 List<String> definitions = Arrays.stream(parts[1].split("\\|"))
                         .map(String::trim)
                         .toList();
@@ -78,14 +78,22 @@ public class SlangDictionary {
     }
 
     // Chức năng 1: Tìm kiếm theo slang word
-    public TreeSet<String> searchByWord(String word) {
+    public List<String> searchByWord(String word) {
         if (word == null || word.isEmpty()) return null;
-        return data.get(word);
+
+        String upperCaseWord = word.toUpperCase();
+        TreeSet<String> definitions = data.get(upperCaseWord);
+        if (definitions == null) return null;
+
+        historyManager.addHistory(upperCaseWord);
+        List<String> sortedDefinitions = new ArrayList<>(definitions);
+        Collections.sort(sortedDefinitions, String.CASE_INSENSITIVE_ORDER);
+        return sortedDefinitions;
     }
 
     // Chức năng 2: Tìm kiếm theo definition
     public Map<String, TreeSet<String>> searchByDefinition(String keyword) {
-        Map<String, TreeSet<String>> results = new HashMap<>();
+        Map<String, TreeSet<String>> results = new TreeMap<>();
         if (keyword == null || keyword.isEmpty()) return results;
         String lowerCaseKeyword = keyword.toLowerCase();
 
@@ -112,20 +120,18 @@ public class SlangDictionary {
             return -2;
         }
 
-        word = word.trim();
+        String upperCaseWord = word.trim().toUpperCase();
         definition = definition.trim();
 
-        if (data.containsKey(word)) {
+        if (data.containsKey(upperCaseWord)) {
             if (overwrite) {
                 TreeSet<String> newDefinitions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                 newDefinitions.add(definition);
-                data.put(word, newDefinitions);
-                saveToFile();
+                data.put(upperCaseWord, newDefinitions);
                 return 0;
             } else {
-                boolean definitionAdded = data.get(word).add(definition);
+                boolean definitionAdded = data.get(upperCaseWord).add(definition);
                 if (definitionAdded) {
-                    saveToFile();
                     return 2;
                 }
                 return -1;
@@ -133,8 +139,7 @@ public class SlangDictionary {
         } else {
             TreeSet<String> definitions = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             definitions.add(definition);
-            data.put(word, definitions);
-            saveToFile();
+            data.put(upperCaseWord, definitions);
             return 1;
         }
     }
@@ -165,7 +170,6 @@ public class SlangDictionary {
             definitions.add(newDef);
         }
 
-        saveToFile();
         return true;
     }
 
@@ -173,7 +177,6 @@ public class SlangDictionary {
     public boolean deleteSlang(String word) {
         if (data.containsKey(word)) {
             data.remove(word);
-            saveToFile();
             return true;
         }
         return false;
@@ -243,5 +246,10 @@ public class SlangDictionary {
         String question = "Which slang word means '" + correctDef + "'?";
 
         return new QuizQuestion(question, answers, correctWord);
+    }
+
+    // Chức năng phụ: Xóa lịch sử tìm kiếm
+    public void clearHistory() {
+        historyManager.clearHistory();
     }
 }
